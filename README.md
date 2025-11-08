@@ -40,14 +40,14 @@ The program reads **sieve analysis data**, calculates key parameters (D10, D30, 
 
 int main() {
     Soil soil(System::ASTM);
-    soil.InsertData("soil.csv"); // or soil.Add_Data() for manual input
+    soil.InsertData("soil_sample.csv"); // or soil.Add_Data() for manual input
     soil.Classify();
     soil.Print_Data();
     soil.SaveFile_CSV();
 }
 ```
 
-### 🖥 Output : 
+### 🖥 Output 
 ```
 system    ,Classify
 ---------------
