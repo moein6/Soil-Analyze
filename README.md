@@ -24,7 +24,17 @@ The program reads **sieve analysis data**, calculates key parameters (D10, D30, 
 
 ## 🧮 Example Usage
 
-### 🧰 1. Create an object
+### 📁 1. file : soil_sample.csv
+
+```
+4.75,100
+2.00,95
+0.425,80
+0.075,25
+```
+
+### 🧰 2. Create an object
+
 ```cpp
 #include "Soil.h"
 
@@ -35,6 +45,33 @@ int main() {
     soil.Print_Data();
     soil.SaveFile_CSV();
 }
+```
+
+### 🖥 Output : 
+```
+system    ,Classify
+---------------
+[ASTM] : SP (Poorly-graded sand)
+[AASHTO] : A-1 to A-3 (Granular soils)
+[MIT] : Coarse soil (sand/gravel)
+
+Sieve      Passing
+--------------------
+4.75       100%
+2          95%
+0.425      80%
+0.075      25%
+
+LL        ,PL        ,PI
+------------------------------
+35        ,20        ,15
+
+D10       ,D30       ,D60       ,CU        ,CC
+--------------------------------------------------
+0.12      ,0.30      ,0.75      ,6.25      ,1.88
+
+Data saved to D:\Soil_allUS.csv
+
 ```
 
 🪨 سیستم طبقه‌بندی خاک (C++20)
