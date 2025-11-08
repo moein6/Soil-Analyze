@@ -52,8 +52,6 @@ int main() {
 system    ,Classify
 ---------------
 [ASTM] : SP (Poorly-graded sand)
-[AASHTO] : A-1 to A-3 (Granular soils)
-[MIT] : Coarse soil (sand/gravel)
 
 Sieve      Passing
 --------------------
@@ -70,7 +68,7 @@ D10       ,D30       ,D60       ,CU        ,CC
 --------------------------------------------------
 0.12      ,0.30      ,0.75      ,6.25      ,1.88
 
-Data saved to D:\Soil_allUS.csv
+Data saved to D:\Soil_ASTM.csv
 
 ```
 
