@@ -27,6 +27,7 @@ The program reads **sieve analysis data**, calculates key parameters (D10, D30, 
 ### 📁 1. file : soil_sample.csv
 
 ```
+SieveSize(mm),Passing(%)
 4.75,100
 2.00,95
 0.425,80
