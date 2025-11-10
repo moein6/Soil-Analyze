@@ -210,8 +210,8 @@ void Soil::Print_Data()
 {
 	constexpr auto header_sieve = "{:<10}{:>10}\n";								//	sieve , pass
 	constexpr auto header_sieve_Body = "{:<10}{:>10}%\n";								//	sieve , pass
-	constexpr auto header_Atterburg = "{:<10},{:<10},{:<10}\n";						//	atterburg
-	constexpr auto header_DC= "{:<10},{:<10},{:<10},{:<10},{:<10}\n";		//	d , c
+	constexpr auto header_Atterburg = "{:<10.4f},{:<10.4f},{:<10.4f}\n";						//	atterburg
+	constexpr auto header_DC= "{:<10},{:<10.4f},{:<10.4f},{:<10.4f},{:<10.4f}\n";		//	d , c
 	constexpr auto header_Name = "{:<10},{:>10}\n";							//	name
 	constexpr auto Header_NameBody = "[{}] : {:>10}\n";
 
@@ -234,7 +234,6 @@ void Soil::Print_Data()
 
 	std::cout << "\n\n";
 
-	std::cout.precision(4);
 	std::cout << std::format(header_sieve, "Sieve", "Passing") << std::string(20, '-') << '\n';
 	
 	for (auto m : m_Data)
@@ -414,3 +413,4 @@ std::string Soil::get_System_STR()const noexcept{
 	case System::ALL:	return "allUS";		break;
 	}
 }
+
