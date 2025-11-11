@@ -1,4 +1,4 @@
-﻿#include "Soil.h"
+#include "Soil.h"
 
 Soil::Soil(const System sys) : m_D60(0), m_D30(0), m_D10(0), m_CU(0), m_CC(0),m_LL(0),M_PL(0) {
 
@@ -24,7 +24,7 @@ void Soil::Set_System(const System sys) {
 
 		std::cout << "Select your naming system\n";
 
-		std::cout << "1 - ASSHTO\n2 - MIT \n3 - BSCS \n4 - ASTM\n5 - ALL US System (ASSHTO, MIT, ASTM) \n -> ";
+		std::cout << "1 - ASSHTO\n2 - MIT \n3 - BSCS \n4 - ASTM / USCS\n5 - ALL US System (ASSHTO, MIT, ASTM/USCS) \n -> ";
 		std::cin >> choose;
 
 		switch (choose) {
@@ -73,8 +73,8 @@ void Soil::Add_Data()
 		std::cout << "Data is already in\n";
 		return;
 	}
-	constexpr auto fmt = "{:>3} : ";
 
+	
 	const auto arr = (m_System == System::MIT or m_System == System::ASTM or m_System == System::ASHTO or m_System == System::ALL)
 		? Sieve_System::ASTM_Sieves : Sieve_System::BS_Sieves;
 
@@ -84,16 +84,22 @@ void Soil::Add_Data()
 
 		double percent;
 
-		if (m_System != System::BSCS)
-			std::cout << std::format(fmt, ASTM_SeivesNo.at(i));
-		else
-			std::cout << std::format(fmt, arr.at(i));
+//		if (m_System != System::BSCS)
+//			std::cout << std::setw(3) << std::right << ASTM_SeivesNo.at(i) << " : ";
+//		else
+			std::cout << std::setw(3) << std::right << arr.at(i) << " : ";
 
 		std::cin >> percent;
-
-		m_Data[arr.at(i)] = percent;
+		if (percent < 100 or percent > 0)
+			m_Data[arr.at(i)] = percent;
+		else
+		{
+			std::cerr << "[ERROR] : Invalid input try again\n\a";
+			i--;
+		}
 	}
-	
+
+
 	std::cout << "\nInput LL : ";
 	std::cin >> m_LL;
 	
@@ -130,6 +136,8 @@ void Soil::InsertData(std::string filename)
 		return;
 	}
 
+	std::vector<std::tuple<double, double>> vec;
+
 	std::string line;
 	while (std::getline(in, line))
 	{
@@ -138,12 +146,16 @@ void Soil::InsertData(std::string filename)
 		double sieve;
 		double percent;
 		ss >> sieve >> percent;
-		m_Data[sieve] = percent;
+		vec.push_back({ sieve , percent });
+		//	m_Data[sieve] = percent;
 	}
 
 	in.close();
 
+	std::sort(vec.begin(), vec.end(), [](const auto& a, const auto& b) {return std::get<0>(a) > std::get<1>(b); });
 
+	for (auto v : vec)
+		m_Data[std::get<0>(v)] = std::get<1>(v);
 
 	std::cout << "\nInput LL : ";
 	std::cin >> m_LL;
@@ -165,8 +177,8 @@ void Soil::Calculate_CuCC()
 
 	// compute approximate D10, D30, D60 by interpolation
 	std::vector<std::pair<double, double>> arr;
-	for (auto& [sieve, pass] : m_Data)
-		arr.emplace_back((double)sieve, pass);
+	for (const auto& it : m_Data)
+		arr.emplace_back((double)it.first, it.second);
 
 	std::sort(arr.begin(), arr.end(),
 		[](auto& a, auto& b) { return a.first > b.first; });
@@ -208,48 +220,48 @@ void Soil::Calculate_CC()
 
 void Soil::Print_Data()
 {
-	constexpr auto header_sieve = "{:<10}{:>10}\n";								//	sieve , pass
-	constexpr auto header_sieve_Body = "{:<10}{:>10}%\n";								//	sieve , pass
-	constexpr auto header_Atterburg = "{:<10.4f},{:<10.4f},{:<10.4f}\n";						//	atterburg
-	constexpr auto header_DC= "{:<10},{:<10.4f},{:<10.4f},{:<10.4f},{:<10.4f}\n";		//	d , c
-	constexpr auto header_Name = "{:<10},{:>10}\n";							//	name
-	constexpr auto Header_NameBody = "[{}] : {:>10}\n";
+	Classify();
 
-
-	std::cout << std::format(header_Name, "system", "Classify") << std::string(15, '-') << '\n';
+	constexpr auto header_sieve			= "{:<10}{:>10}\n";								//	sieve , pass
+	constexpr auto header_sieve_Body	= "{:<10}{:>10}%\n";							//	sieve , pass
+	constexpr auto header_Atterburg		= "{:<10},{:<10},{:<10}\n";						//	atterburg
+	constexpr auto header_DC			= "{:<10},{:<10},{:<10},{:<10},{:<10}\n";		//	d , c
+	
+	std::cout << std::setw(10) << "System" << std::setw(10) << std::right << "Classify\n" << std::string(20, '-') << '\n';
 
 	switch (m_System) {
-		case System::ASHTO:	std::cout << std::format(Header_NameBody, "ASSHTO", m_ASHTO_Name);		break;
-		case System::ASTM:	std::cout << std::format(Header_NameBody, "ASTM", m_ASTM_Name);			break;
-		case System::BSCS:	std::cout << std::format(Header_NameBody, "BSCD", m_BSCS_Name);			break;
-		case System::MIT:	std::cout << std::format(Header_NameBody, "MIT", m_MIT_Name);			break;
-		case System::ALL: {
-			std::cout << std::format(Header_NameBody, "ASSHTO", m_ASHTO_Name);
-			std::cout << std::format(Header_NameBody, "ASTM", m_ASTM_Name);
-			std::cout << std::format(Header_NameBody, "BSCD", m_BSCS_Name);
-			std::cout << std::format(Header_NameBody, "MIT", m_MIT_Name);
-		}																							
+	case System::ASHTO: std::cout << std::setw(10) << std::left << "[AASHTO]"	<< std::setw(10) << std::right << m_ASHTO_Name	<< '\n';	break;
+	case System::ASTM:	std::cout << std::setw(10) << std::left << "[ASTM]"		<< std::setw(10) << std::right << m_ASTM_Name	<< '\n';	break;
+	case System::MIT:	std::cout << std::setw(10) << std::left << "[MIT]"		<< std::setw(10) << std::right << m_MIT_Name	<< '\n';	break;
+	case System::BSCS:	std::cout << std::setw(10) << std::left << "[BSCS]"		<< std::setw(10) << std::right << m_BSCS_Name	<< '\n';	break;
+	case System::ALL: {
+		std::cout << std::setw(10) << std::left << "[AASHTO]" << std::setw(10) << std::right << m_ASHTO_Name << '\n';
+		std::cout << std::setw(10) << std::left << "[ASTM]" << std::setw(10) << std::right << m_ASTM_Name << '\n';
+		std::cout << std::setw(10) << std::left << "[MIT]" << std::setw(10) << std::right << m_MIT_Name << '\n';
+	}//	end ALL
 	}//	end switch
 
 
 	std::cout << "\n\n";
 
-	std::cout << std::format(header_sieve, "Sieve", "Passing") << std::string(20, '-') << '\n';
+	std::cout.precision(4);
+	std::cout << std::setw(20) << std::left << "Sieve (mm)" << std::setw(10) << std::right<< "Passing(%)" << '\n' << std::string(30, '-') << '\n';
 	
-	for (auto m : m_Data)
-		std::cout << std::format(header_sieve_Body, m.first, m.second);
-
+	for (const auto &m : m_Data)
+		std::cout << std::setw(15) << std::left << m.first << std::setw(10) << std::right << m.second << '\n';
+	
 	std::cout << "\n\n";
 
-	std::cout << std::format(header_Atterburg, "LL", "PL", "PI") << std::string(30,'-') << '\n';
-	std::cout << std::format(header_Atterburg, m_LL, M_PL, m_PI);
-
+	std::cout << std::setw(10) << std::left << "LL" << std::setw(10) << std::left << "PL" << std::setw(10) << std::left << "PI" << '\n' << std::string(25, '-') << '\n';
+	std::cout << std::setw(10) << std::left << m_LL << std::setw(10) << std::left << M_PL << std::setw(10) << std::left << m_PI << '\n';
+	
 	std::cout << "\n\n";
 
-	std::cout << std::format(header_DC, "D10", "D30", "D60", "CU", "CC") << std::string(50, '-') << '\n';
-	std::cout << std::format(header_DC, m_D10, m_D30, m_D60, m_CU, m_CC);
-
-
+	std::cout << std::setw(10) << std::left << "D10" << std::setw(10) << std::left << "D30" << std::setw(10) << std::left << "D60";
+	std::cout << std::setw(10) << std::left << "CU" << std::setw(10) << std::left << "CC" << '\n' << std::string(50, '-') << '\n';
+	
+	std::cout << std::setw(10) << std::left << m_D10 << std::setw(10) << std::left << m_D30 << std::setw(10) << std::left << m_D60;
+	std::cout << std::setw(10) << std::left << m_CU << std::setw(10) << std::left << m_CC << '\n';
 
 }
 
@@ -257,30 +269,35 @@ void Soil::Name_ASTM()
 {
 	if (!ValidateData(&m_Data)) return;
 
-	double finePercent = 0.0;
-	for (auto& [sieve, pass] : m_Data)
-		if (std::abs(sieve - 0.075) < 1e-3)
-			finePercent = pass;
+	double percentFines = 0.0; // دانه‌های کمتر از 0.075
+	for (const auto& it : m_Data)
+		if (std::abs(it.first - 0.075) < 1e-3)
+			percentFines = it.second;
 
-	if (finePercent < 50) {
-		bool isSand = false;
-		for (auto& [sieve, pass] : m_Data)
-			if (std::abs(sieve - 4.75) < 1e-3)
-				isSand = (pass > 50);
+	// خاک عمدتاً ماسه/سنگریزه
+	if (percentFines < 50) {
+		double percentGravel = 0.0;
+		double percentSand = 0.0;
 
-		if (isSand) {
-			if (m_CU > 6 && (m_CC > 1 && m_CC < 3))
-				m_ASTM_Name = "SW (Well-graded sand)";
-			else
-				m_ASTM_Name = "SP (Poorly-graded sand)";
+		for (const auto& it : m_Data) {
+			if (it.first > 4.75) percentGravel += it.second;
+			else if (it.first <= 4.75 && it.first > 0.075) percentSand += it.second;
 		}
-		else {
-			if (m_CU > 4 && (m_CC > 1 && m_CC < 3))
+
+		if (percentGravel > percentSand) { // خاک درشت غالب
+			if (m_CU > 4 && m_CC > 1 && m_CC < 3)
 				m_ASTM_Name = "GW (Well-graded gravel)";
 			else
 				m_ASTM_Name = "GP (Poorly-graded gravel)";
 		}
+		else { // ماسه غالب
+			if (m_CU > 6 && m_CC > 1 && m_CC < 3)
+				m_ASTM_Name = "SW (Well-graded sand)";
+			else
+				m_ASTM_Name = "SP (Poorly-graded sand)";
+		}
 	}
+	// خاک ریز غالب
 	else {
 		if (m_LL < 50) {
 			if (m_PI < 4) m_ASTM_Name = "ML (Silt - low plasticity)";
@@ -293,8 +310,6 @@ void Soil::Name_ASTM()
 			else m_ASTM_Name = "CH-MH (Intermediate fine soil)";
 		}
 	}
-
-	std::cout << "[ASTM] Soil classification: " << m_ASTM_Name << "\n";
 }
 
 void Soil::Name_AASHTO()
@@ -302,73 +317,99 @@ void Soil::Name_AASHTO()
 	if (!ValidateData(&m_Data)) return;
 
 	double passNo10 = 0, passNo40 = 0, passNo200 = 0;
-	for (auto& [sieve, pass] : m_Data) {
-		if (std::abs(sieve - 2.00) < 1e-3) passNo10 = pass;
-		if (std::abs(sieve - 0.425) < 1e-3) passNo40 = pass;
-		if (std::abs(sieve - 0.075) < 1e-3) passNo200 = pass;
+	for (const auto& it : m_Data) {
+		if (std::abs(it.first - 2.00) < 1e-3) passNo10 = it.second;
+		if (std::abs(it.first - 0.425) < 1e-3) passNo40 = it.second;
+		if (std::abs(it.first - 0.075) < 1e-3) passNo200 = it.second;
 	}
 
+	// دانه ریز کمتر از 35٪ → خاک دانه‌ای
 	if (passNo200 < 35) {
-		m_ASHTO_Name = "A-1 to A-3 (Granular soils)";
-	}
-	else if (m_LL < 40) {
-		if (m_PI < 10)
-			m_ASHTO_Name = "A-4 (Silt)";
+		if (passNo10 > 50)
+			m_ASHTO_Name = "A-1-b (Gravelly sand)";
 		else
-			m_ASHTO_Name = "A-6 (Clay)";
+			m_ASHTO_Name = "A-3 (Sandy or gravelly soil)";
 	}
-	else {
-		if (m_PI < 10)
-			m_ASHTO_Name = "A-5 (Elastic silt)";
-		else
-			m_ASHTO_Name = "A-7 (Clay of high plasticity)";
+	else { // خاک ریز غالب
+		if (m_LL < 40) {
+			if (m_PI < 10)
+				m_ASHTO_Name = "A-4 (Silt)";
+			else
+				m_ASHTO_Name = "A-6 (Clay)";
+		}
+		else {
+			if (m_PI < 10)
+				m_ASHTO_Name = "A-5 (Elastic silt)";
+			else
+				m_ASHTO_Name = "A-7 (Clay of high plasticity)";
+		}
 	}
-
-	std::cout << "[AASHTO] Soil classification: " << m_ASHTO_Name << "\n";
 }
 
 void Soil::Name_MIT()
 {
 	if (!ValidateData(&m_Data)) return;
 
-	double finePercent = 0.0;
-	for (auto& [sieve, pass] : m_Data)
-		if (std::abs(sieve - 0.075) < 1e-3)
-			finePercent = pass;
+	double percentFines = 0.0;
+	for (const auto& it : m_Data)
+		if (std::abs(it.first - 0.075) < 1e-3)
+			percentFines = it.second;
 
-	if (finePercent < 50)
-		m_MIT_Name = "Coarse soil (sand/gravel)";
-	else if (m_LL < 35)
-		m_MIT_Name = "Silt or clay of low plasticity";
-	else
-		m_MIT_Name = "Silt or clay of high plasticity";
+	double percentGravel = 0.0, percentSand = 0.0;
+	for (const auto& it : m_Data) {
+		if (it.first > 4.75) percentGravel += it.second;
+		else if (it.first <= 4.75 && it.first > 0.075) percentSand += it.second;
+	}
 
-	std::cout << "[MIT] Soil classification: " << m_MIT_Name << "\n";
+	if (percentFines < 50) { // خاک دانه‌ای
+		if (percentGravel > percentSand)
+			m_MIT_Name = "Gravelly soil";
+		else
+			m_MIT_Name = "Sandy soil";
+	}
+	else { // خاک ریز
+		if (m_LL < 35)
+			m_MIT_Name = "Silt or clay of low plasticity";
+		else
+			m_MIT_Name = "Silt or clay of high plasticity";
+	}
 }
 
 void Soil::Name_BSCS()
 {
 	if (!ValidateData(&m_Data)) return;
 
-	double finePercent = 0.0;
-	for (auto& [sieve, pass] : m_Data)
-		if (std::abs(sieve - 0.063) < 1e-3)
-			finePercent = pass;
+	double percentFines = 0.0;
+	for (const auto& it : m_Data)
+		if (std::abs(it.first - 0.075) < 1e-3)
+			percentFines = it.second;
 
-	if (finePercent < 35)
-		m_BSCS_Name = "Coarse soil (sand/gravel)";
-	else {
-		if (m_LL < 35) {
-			if (m_PI < 10) m_BSCS_Name = "Silty clay (low plasticity)";
-			else m_BSCS_Name = "Clayey silt (moderate plasticity)";
-		}
-		else {
-			if (m_PI < 10) m_BSCS_Name = "Silt (high LL)";
-			else m_BSCS_Name = "Clay (high LL)";
-		}
+	double percentGravel = 0.0, percentSand = 0.0;
+	for (const auto& it : m_Data) {
+		if (it.first > 4.75) percentGravel += it.second;
+		else if (it.first <= 4.75 && it.first > 0.075) percentSand += it.second;
 	}
 
-	std::cout << "[BSCS] Soil classification: " << m_BSCS_Name << "\n";
+	if (percentFines < 35) { // خاک درشت
+		if (percentGravel > percentSand)
+			m_BSCS_Name = "Gravelly soil";
+		else
+			m_BSCS_Name = "Sandy soil";
+	}
+	else { // خاک ریز
+		if (m_LL < 35) {
+			if (m_PI < 10)
+				m_BSCS_Name = "Silty clay (low plasticity)";
+			else
+				m_BSCS_Name = "Clayey silt (moderate plasticity)";
+		}
+		else {
+			if (m_PI < 10)
+				m_BSCS_Name = "Silt (high LL)";
+			else
+				m_BSCS_Name = "Clay (high LL)";
+		}
+	}
 }
 
 void Soil::Classify()
@@ -389,6 +430,7 @@ void Soil::Classify()
 		Name_ASTM();
 		break;
 	}//	end switch
+
 }//	end function
 
 void Soil::SaveFile_CSV()
@@ -397,8 +439,22 @@ void Soil::SaveFile_CSV()
 
 	std::ofstream out(Filename.data());
 
-	for (auto& [sieve, val] : m_Data)
-		out << sieve << "," << val << "\n";
+	for (const auto& it : m_Data)
+		out << it.first << "," << it.second << "\n";
+
+	switch (m_System) {
+	case System::ASHTO: out << '[' << get_System_STR() << "] " << m_ASHTO_Name;	break;
+	case System::ASTM:	out << '[' << get_System_STR() << "] " << m_ASTM_Name;		break;
+	case System::MIT:	out << '[' << get_System_STR() << "] " << m_MIT_Name;		break;
+	case System::BSCS:	out << '[' << get_System_STR() << "] " << m_BSCS_Name;		break;
+	case System::ALL: {
+		out << '[' << get_System_STR() << "] " << m_ASHTO_Name;
+		out << '[' << get_System_STR() << "] " << m_ASTM_Name;
+		out << '[' << get_System_STR() << "] " << m_MIT_Name;
+		out << '[' << get_System_STR() << "] " << m_BSCS_Name;
+	}//	end case
+	}//	end switch
+
 	out.close();
 
 	std::cout << "Data saved to " << Filename << "\n";
@@ -410,7 +466,7 @@ std::string Soil::get_System_STR()const noexcept{
 	case System::MIT:	return "MIT";		break;
 	case System::BSCS:	return "BSCS";		break;
 	case System::ASTM:	return "ASTM";		break;
-	case System::ALL:	return "allUS";		break;
+	case System::ALL:	return "US";		break;
 	}
+	return "Unknown";
 }
-
