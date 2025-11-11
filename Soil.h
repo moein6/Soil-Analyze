@@ -1,9 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include <map>
 #include <array>
-#include <format>
-#include <string>
 #include <vector>
 #include <iomanip>
 #include <sstream>
@@ -11,27 +9,21 @@
 #include <iostream>
 #include <algorithm>
 
-//	Seieves :  4,	   6,	 10,	20,		40,	  60,	 100,	200 ,0
-//	 " size : 4.76 , 3.36 , 2.00 , 0.84 , 0.42 , 0.25 , 0.149 , 0.079
-
-constexpr auto debug = true;
-
 
 constexpr auto null = "NULL";
 const size_t sieveCount = 9;
-const std::array<int, sieveCount> ASTM_SeivesNo = { 4,6,10,20,40,60,100,200,0 };
 
 enum class System {
+	NUN,
 	ASHTO,
 	MIT,
 	ASTM,
 	BSCS,
-	NUN,
 	ALL
 };
 
 struct Sieve_System {
-	static constexpr std::array<double, sieveCount> ASTM_Sieves = { 4.75, 3.36, 2.00, 0.84, 0.425, 0.25, 0.149, 0.075, 0.0 };
+	static constexpr std::array<double, sieveCount> ASTM_Sieves = { 4.75, 3.36, 2.00, 0.84, 0.425, 0.25, 0.149, 0.075 , 0.0 };
 	static constexpr std::array<double, sieveCount> BS_Sieves = { 5.00, 2.36, 1.18, 0.60, 0.300, 0.150, 0.075, 0.063, 0.0 };
 };
 
@@ -55,7 +47,8 @@ public:
 	void Name_MIT();
 	void Name_AASHTO();
 	void Name_BSCS();
-
+	
+	void My_ASTM_Naming();
 
 	//	csv & txt
 	void InsertData(std::string = null);
