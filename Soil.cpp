@@ -220,48 +220,48 @@ void Soil::Calculate_CC()
 
 void Soil::Print_Data()
 {
-	Classify();
+	constexpr auto header_sieve = "{:<10}{:>10}\n";								//	sieve , pass
+	constexpr auto header_sieve_Body = "{:<10}{:>10}%\n";								//	sieve , pass
+	constexpr auto header_Atterburg = "{:<10.4f},{:<10.4f},{:<10.4f}\n";						//	atterburg
+	constexpr auto header_DC= "{:<10},{:<10.4f},{:<10.4f},{:<10.4f},{:<10.4f}\n";		//	d , c
+	constexpr auto header_Name = "{:<10},{:>10}\n";							//	name
+	constexpr auto Header_NameBody = "[{}] : {:>10}\n";
 
-	constexpr auto header_sieve			= "{:<10}{:>10}\n";								//	sieve , pass
-	constexpr auto header_sieve_Body	= "{:<10}{:>10}%\n";							//	sieve , pass
-	constexpr auto header_Atterburg		= "{:<10},{:<10},{:<10}\n";						//	atterburg
-	constexpr auto header_DC			= "{:<10},{:<10},{:<10},{:<10},{:<10}\n";		//	d , c
-	
-	std::cout << std::setw(10) << "System" << std::setw(10) << std::right << "Classify\n" << std::string(20, '-') << '\n';
+
+	std::cout << std::format(header_Name, "system", "Classify") << std::string(15, '-') << '\n';
 
 	switch (m_System) {
-	case System::ASHTO: std::cout << std::setw(10) << std::left << "[AASHTO]"	<< std::setw(10) << std::right << m_ASHTO_Name	<< '\n';	break;
-	case System::ASTM:	std::cout << std::setw(10) << std::left << "[ASTM]"		<< std::setw(10) << std::right << m_ASTM_Name	<< '\n';	break;
-	case System::MIT:	std::cout << std::setw(10) << std::left << "[MIT]"		<< std::setw(10) << std::right << m_MIT_Name	<< '\n';	break;
-	case System::BSCS:	std::cout << std::setw(10) << std::left << "[BSCS]"		<< std::setw(10) << std::right << m_BSCS_Name	<< '\n';	break;
-	case System::ALL: {
-		std::cout << std::setw(10) << std::left << "[AASHTO]" << std::setw(10) << std::right << m_ASHTO_Name << '\n';
-		std::cout << std::setw(10) << std::left << "[ASTM]" << std::setw(10) << std::right << m_ASTM_Name << '\n';
-		std::cout << std::setw(10) << std::left << "[MIT]" << std::setw(10) << std::right << m_MIT_Name << '\n';
-	}//	end ALL
+		case System::ASHTO:	std::cout << std::format(Header_NameBody, "ASSHTO", m_ASHTO_Name);		break;
+		case System::ASTM:	std::cout << std::format(Header_NameBody, "ASTM", m_ASTM_Name);			break;
+		case System::BSCS:	std::cout << std::format(Header_NameBody, "BSCD", m_BSCS_Name);			break;
+		case System::MIT:	std::cout << std::format(Header_NameBody, "MIT", m_MIT_Name);			break;
+		case System::ALL: {
+			std::cout << std::format(Header_NameBody, "ASSHTO", m_ASHTO_Name);
+			std::cout << std::format(Header_NameBody, "ASTM", m_ASTM_Name);
+			std::cout << std::format(Header_NameBody, "BSCD", m_BSCS_Name);
+			std::cout << std::format(Header_NameBody, "MIT", m_MIT_Name);
+		}																							
 	}//	end switch
 
 
 	std::cout << "\n\n";
 
-	std::cout.precision(4);
-	std::cout << std::setw(20) << std::left << "Sieve (mm)" << std::setw(10) << std::right<< "Passing(%)" << '\n' << std::string(30, '-') << '\n';
+	std::cout << std::format(header_sieve, "Sieve", "Passing") << std::string(20, '-') << '\n';
 	
-	for (const auto &m : m_Data)
-		std::cout << std::setw(15) << std::left << m.first << std::setw(10) << std::right << m.second << '\n';
-	
+	for (auto m : m_Data)
+		std::cout << std::format(header_sieve_Body, m.first, m.second);
+
 	std::cout << "\n\n";
 
-	std::cout << std::setw(10) << std::left << "LL" << std::setw(10) << std::left << "PL" << std::setw(10) << std::left << "PI" << '\n' << std::string(25, '-') << '\n';
-	std::cout << std::setw(10) << std::left << m_LL << std::setw(10) << std::left << M_PL << std::setw(10) << std::left << m_PI << '\n';
-	
+	std::cout << std::format(header_Atterburg, "LL", "PL", "PI") << std::string(30,'-') << '\n';
+	std::cout << std::format(header_Atterburg, m_LL, M_PL, m_PI);
+
 	std::cout << "\n\n";
 
-	std::cout << std::setw(10) << std::left << "D10" << std::setw(10) << std::left << "D30" << std::setw(10) << std::left << "D60";
-	std::cout << std::setw(10) << std::left << "CU" << std::setw(10) << std::left << "CC" << '\n' << std::string(50, '-') << '\n';
-	
-	std::cout << std::setw(10) << std::left << m_D10 << std::setw(10) << std::left << m_D30 << std::setw(10) << std::left << m_D60;
-	std::cout << std::setw(10) << std::left << m_CU << std::setw(10) << std::left << m_CC << '\n';
+	std::cout << std::format(header_DC, "D10", "D30", "D60", "CU", "CC") << std::string(50, '-') << '\n';
+	std::cout << std::format(header_DC, m_D10, m_D30, m_D60, m_CU, m_CC);
+
+
 
 }
 
@@ -470,3 +470,4 @@ std::string Soil::get_System_STR()const noexcept{
 	}
 	return "Unknown";
 }
+
