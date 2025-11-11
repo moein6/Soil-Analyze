@@ -47,8 +47,6 @@ public:
 	void Name_MIT();
 	void Name_AASHTO();
 	void Name_BSCS();
-	
-	void My_ASTM_Naming();
 
 	//	csv & txt
 	void InsertData(std::string = null);
@@ -77,5 +75,6 @@ private:
 	void Copy(const std::map<double, double>*);
 
 };
+
 
 
