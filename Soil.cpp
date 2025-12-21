@@ -57,7 +57,7 @@ void Soil::Add_Data()
 		if(m_LL <= 100 or m_LL >= 0 or M_PL <= 100 or M_PL >= 0)
 			recive = false;
 		else
-			std::cerr << "[ERROR] : m_LL or m_PL has wrong value!\n";
+			std::cerr << "[ERROR] : LL or PL has wrong value!\n";
 			
 		}while(recive == true);
 		
@@ -587,8 +587,6 @@ void Soil::SaveFile_CSV()
 		}//	end switch
 
 		out << "\n\n";
-
-		out << std::setw(20) << std::left << "Sieve (mm)" << std::setw(10) << std::right << "Passing(%)" << '\n' << std::string(30, '-') << '\n';
 
 
 		const auto sys = Get_Sieve_System(m_System);
