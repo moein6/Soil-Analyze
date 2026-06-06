@@ -28,7 +28,7 @@ private:
 private:
 
 	bool Detected;
-	double m_pASTMno, m_pBSCSno , m_pMITno , m_pAASHTOno, m_pASTMsize, m_pBSCSsize, m_pAASHTOsize, m_pMITsize;
+	double m_pASTMno, m_pBSCSno , m_pASTMsize, m_pBSCSsize;
 
 };
 
