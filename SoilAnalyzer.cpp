@@ -18,27 +18,6 @@ short Menu(const char* options, const short Limit) {
 
 int main()
 {
-    std::cout.precision(9);
-    
-    const double a = 8742.25;
-
-    for (double c = 50; c < 200; c += 0.00001) {
-
-        auto res = a * c + 132000000 * ((c - 65) / c) - 924000;
-
-        if (res > 0) {
-            std::cout << "c = " << c << ' ' << res << '\n';
-            break;
-        }
-
-    }
-
-
-
-
-#if 0
-
-
     Soil s;
     
     while (true) {
@@ -52,17 +31,9 @@ int main()
         case 5: s.Clear();          break;
         case 6: s.Help();           break;
         case 0: exit(1);            
-        }// wns switch
+        }// end switch
         
         std::system("pause");
     }// end while
     return 0;
-
-#endif
 }
-
-
-/*
-    to save different data in file i should use the date of saving file.
-
-*/
