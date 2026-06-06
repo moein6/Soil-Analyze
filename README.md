@@ -60,10 +60,4 @@ D10   D30   D60   CC    CU
 0.15  0.60  2.00  1.20  13.33
 ```
 
-## 👨‍💻 Developer
 
-Developed by a civil engineering & C++ enthusiast.
-
-## 📜 License
-
-MIT
