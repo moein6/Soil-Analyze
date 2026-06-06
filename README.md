@@ -1,95 +1,69 @@
-# 🪨 Soil Classification System (C++20)
+# 🧱 Soil Analyzer – دانه‌بندی خاک
 
-A comprehensive **soil classification program** written in **modern C++20**, implementing **ASTM, AASHTO, MIT, and BSCS** standards.  
-The program reads **sieve analysis data**, calculates key parameters (D10, D30, D60, CU, CC), Atterberg limits (LL, PL, PI), and classifies the soil accordingly.  
+A modular C++20 tool for sieve analysis and soil classification (ASTM, AASHTO, BSCS, MIT).
 
----
+## ✨ Features
+- Auto‑detection of sieve system
+- D10, D30, D60, Cu, Cc calculation
+- Classification by: ASTM, AASHTO, BSCS, MIT
+- LL/PL input → PI
+- File (CSV/TXT) or manual input
+- Save results
 
-## ⚙️ Features
+## 🛠 Requirements
+- C++20 compiler (GCC 11+, Clang 15+, MSVC 2022)
+- CMake ≥ 3.16 (optional)
 
-- 📜 **CSV or manual data input** for sieve analysis  
-- 📏 **Automatic calculation** of D₁₀, D₃₀, D₆₀ via linear interpolation  
-- 📈 Computes **Uniformity (CU)** and **Curvature (CC)** coefficients  
-- 💧 Calculates **Atterberg limits**: Liquid Limit (LL), Plastic Limit (PL), Plasticity Index (PI)  
-- 🧱 Supports multiple **naming/classification systems**:
-  - ASTM (Unified Soil Classification System)
-  - AASHTO
-  - MIT
-  - BSCS (British System)
-- 💾 **Data saving** in CSV format  
-- 💻 100% **standard C++20 STL** — no external libraries  
-- 🧩 Fully **object-oriented** design (using class `Soil`)
+## 🚀 Build & Run
 
----
-
-## 🧮 Example Usage
-
-### 📁 1. file : soil_sample.csv
-
-```
-SieveSize(mm),Passing(%)
-4.75,100
-2.00,95
-0.425,80
-0.075,25
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release
+./SoilAnalyzer
 ```
 
-### 🧰 2. Create an object
-
-```cpp
-#include "Soil.h"
-
-int main() {
-    Soil soil(System::ASTM);
-    soil.InsertData("soil_sample.csv"); // or soil.Add_Data() for manual input
-    soil.Classify();
-    soil.Print_Data();
-    soil.SaveFile_CSV();
-}
-```
-
-### 🖥 Output 
-```
-system    ,Classify
----------------
-[ASTM] : SP (Poorly-graded sand)
-
-Sieve      Passing
---------------------
-4.75       100%
-2          95%
-0.425      80%
-0.075      25%
-
-LL        ,PL        ,PI
-------------------------------
-35        ,20        ,15
-
-D10       ,D30       ,D60       ,CU        ,CC
---------------------------------------------------
-0.12      ,0.30      ,0.75      ,6.25      ,1.88
-
-Data saved to D:\Soil_ASTM.csv
+## 📂 Project Structure
 
 ```
+├── Analyze.cpp/h       # system matching
+├── Input.cpp/h         # manual input
+├── Insert.cpp/h        # file input
+├── Sieve.cpp/h         # sieve data
+├── Soil.cpp/h          # classification core
+├── Screen.h            # console tools
+└── SoilAnalyzer.cpp    # main & menu
+```
 
-🪨 سیستم طبقه‌بندی خاک (C++20)
+## 📥 Input File Format (CSV/TXT)
 
-برنامه‌ای مدرن و شیءگرا به زبان ++C20 برای تحلیل و طبقه‌بندی خاک‌ها بر اساس استانداردهای
-ASTM، AASHTO، MIT و BSCS.
-این برنامه داده‌های آزمایش دانه‌بندی (sieve analysis) را از فایل CSV می‌خواند، پارامترهای مهمی مانند
-D10، D30، D60، CU، CC و حدود اتربرگ (LL، PL، PI) را محاسبه کرده و نوع خاک را تعیین می‌کند.
+```
+4,4.75,92
+8,2.36,85
+...
+```
 
-⚙️ قابلیت‌ها
+## 📸 Sample Output
 
-📜 خواندن داده از فایل CSV یا ورود دستی
+```
+System         Classify
+[ASTM]         SW
 
-📏 محاسبه خودکار D10، D30، D60، CU، CC
+NO | SIZE  | PASSING
+4  | 4.75  | 100
+...
 
-💧 محاسبه حدود اتربرگ (LL، PL، PI)
+LL | PL | PI
+35 | 20 | 15
 
-🧱 پشتیبانی از چند سیستم نام‌گذاری (ASTM, AASHTO, MIT, BSCS)
+D10   D30   D60   CC    CU
+0.15  0.60  2.00  1.20  13.33
+```
 
-💾 ذخیره نتایج در فایل CSV
+## 👨‍💻 Developer
 
-💻 نوشته‌شده فقط با کتابخانه‌های استاندارد
+Developed by a civil engineering & C++ enthusiast.
+
+## 📜 License
+
+MIT
