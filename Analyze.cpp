@@ -71,58 +71,6 @@ bool Analyze::Analyze_ASTM(const SieveVector&vec) {
 	m_pASTMno = (countNo / astm_No.size()) * 100;
 	m_pASTMsize = (countSize / astm_size.size()) * 100;
 
-
-
-#if 0
-	//	first way with error in size
-
-	//	0.5 < x < 2.35
-
-	for (const auto& [vec_no, vec_size, vec_pass] : vec) {
-		bool foundNo = false;
-		if (Continue) {
-			for (const auto& [astm_no, astm_size, astm_pass] : m_astm) {
-
-
-				//	find NO
-				if (vec_no == astm_no) {
-					count++;
-
-					foundNo = true;
-
-					//	calculate Error percent
-					const auto& Err = (std::abs(astm_size - vec_size) / astm_size) * 100;
-
-					//	if error is more than allowed range : stop looping and quit function return false.
-					if (Err > 2.40) {
-
-						Confirmed = false;
-						Continue = false;
-						std::cerr << "This sieve do not match ASTM system : #" << vec_no << " , " << vec_size << "mm\n\a";
-
-						//	return false;
-					}//	end if
-
-					break;
-
-				}//	end if
-			}//	end for
-		}//	end if
-		else break;
-
-		if (foundNo == false)
-		{
-			Confirmed = false;
-			Continue = false;
-			//	return false;
-		}//	end if
-
-	}//	end for
-
-	percent_astm = (count / m_astm.size()) * 100;
-
-#endif
-
 	return Confirmed;
 }
 
@@ -166,55 +114,6 @@ bool Analyze::Analyze_BSCS(const SieveVector& vec) {
 	m_pBSCSno = (countNo / bscs_No.size()) * 100;
 	m_pBSCSsize = (countSize / bscs_size.size()) * 100;
 
-
-#if 0
-	//	first way with error in sizes
-	//	0.5 < x < 2.35
-
-	for (const auto& [vec_no, vec_size, vec_pass] : vec) {
-		bool foundNo = false;
-		if (Continue) {
-			for (const auto& [bscs_no, bscs_size, bscs_pass] : m_bscs) {
-
-
-				//	find NO
-				if (vec_no == bscs_no) {
-
-					foundNo = true;
-
-					//	calculate Error percent
-					const auto& Err = (std::abs(bscs_size - vec_size) / bscs_size) * 100;
-
-					//	if error is more than allowed range : stop looping and quit function return false.
-					if (Err > 2.40) {
-
-						Confirmed = false;
-						Continue = false;
-						std::cerr << "This sieve do not match BSCS system : #" << vec_no << " , " << vec_size << "mm\n\a";
-
-						//	return false;
-					}//	end if
-
-					break;
-
-				}//	end if
-			}//	end for
-			count++;
-		}//	end if
-		else break;
-
-		if (foundNo == false)
-		{
-			Confirmed = false;
-			Continue = false;
-			//	return false;
-		}//	end if
-	}//	end for
-
-	percent_bscs = (count / m_bscs.size()) * 100;
-
-#endif
-	
 	return Confirmed;
 
 }
